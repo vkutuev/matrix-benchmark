@@ -1,0 +1,3 @@
+[submodule "pocl"]
+	path = pocl
+	url = https://github.com/pocl/pocl.git
