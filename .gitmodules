@@ -7,3 +7,6 @@
 [submodule "ImageProcessing"]
 	path = ImageProcessing
 	url = https://github.com/gsvgit/ImageProcessing.git
+[submodule "OpenBLAS"]
+	path = OpenBLAS
+	url = https://github.com/OpenMathLib/OpenBLAS.git
