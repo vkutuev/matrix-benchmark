@@ -4,3 +4,6 @@
 [submodule "CLBlast"]
 	path = CLBlast
 	url = https://github.com/CNugteren/CLBlast.git
+[submodule "ImageProcessing"]
+	path = ImageProcessing
+	url = https://github.com/gsvgit/ImageProcessing.git
