@@ -49,7 +49,6 @@ if [[ "$BUILD_POCL" != 0 ]]; then
 			;;
 		"aarch64") POCL_CMAKE_FLAGS="-DLLC_HOST_CPU=cortex-a55"
 			;;
-			# TODO add arm
 		*) echo "Unknown arch" && exit 1
 			;;
 	esac
