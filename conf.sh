@@ -1,8 +1,11 @@
 # Benchmark configuration
 # -----------------------
 ENABLE_OPENBLAS=1
+BUILD_OPENBLAS=1
 ENABLE_CLBLAST=1
+BUILD_CLBLAST=1
 ENABLE_BRAHMA=1
+BUILD_BRAHMA=1
 
 INSTALL_DEPS=0
 
@@ -21,7 +24,7 @@ OPENCL_DEVICE=0
 
 # CLBlast configuration
 # ---------------------
-OUT_CLBLAST=clblast.csv
+OUT_CLBLAST=clblast_${OPENCL_PLATFORM}_${OPENCL_DEVICE}.csv
 
 # OpenBLAS configuration
 # ----------------------
@@ -29,7 +32,9 @@ OUT_OPENBLAS=openblas.csv
 
 # ImageProcessing configuration
 # -----------------------------
-OUT_BRAHMA=brahma.csv
-IMGPROC_WGS=64
-IMGPROC_WPT=4
-IMGPROC_DEV=anygpu
+BRAHMA_WGS=8
+BRAHMA_WPT=4
+BRAHMA_DEV=anygpu
+BRAHMA_KERNEL=k4
+OUT_BRAHMA=brahma_${BRAHMA_DEV}.csv
+export BRAHMA_OCL_PATH=/usr/lib/libOpenCL.so.1.0.0

@@ -72,10 +72,12 @@ fi
 if [[ "$ENABLE_OPENBLAS" != 0 ]]; then
 	S="$R/OpenBLAS"
 	B="$S/build"
-	cmake -S "$S" -B "$B" \
-		-DCMAKE_BUILD_TYPE=Release -G Ninja \
-		-DBUILD_BENCHMARKS=ON -DBUILD_SHARED_LIBS=ON \
-		&& cmake --build "$B"
+	if [[ "$BUILD_OPENBLAS" != 0 ]]; then
+		cmake -S "$S" -B "$B" \
+			-DCMAKE_BUILD_TYPE=Release -G Ninja \
+			-DBUILD_BENCHMARKS=ON -DBUILD_SHARED_LIBS=ON \
+			&& cmake --build "$B"
+	fi
 
 	for N in "${MATRICES_SIZES[@]}"; do
 		OPENBLAS_LOOPS="$RUNS_NUMBER" "$B/benchmark_gemm" "$N" "$N" 2>&1 \
@@ -85,19 +87,16 @@ if [[ "$ENABLE_OPENBLAS" != 0 ]]; then
 fi
 
 if [[ "$ENABLE_CLBLAST" != 0 ]]; then
-	echo "Install CLBlast deps"
-	echo "--------------------"
-	# TODO install clblast deps
-
-	echo "Build CLBlast"
-	echo "-------------"
-	git clone https://github.com/CNugteren/CLBlast
 	S="$R/CLBlast"
 	B="$S/build"
-	cmake -S "$S" -B "$B" \
-		-DCMAKE_BUILD_TYPE=Release -G Ninja \
-		-DCLIENTS=ON \
-		&& cmake --build "$B"
+	if [[ "$BUILD_CLBLAST" != 0 ]]; then
+		echo "Build CLBlast"
+		echo "-------------"
+		cmake -S "$S" -B "$B" \
+			-DCMAKE_BUILD_TYPE=Release -G Ninja \
+			-DCLIENTS=ON \
+			&& cmake --build "$B"
+	fi
 
 	echo "Run CLBlast benckmark"
 	echo "---------------------"
@@ -110,32 +109,33 @@ if [[ "$ENABLE_CLBLAST" != 0 ]]; then
 			-layout 101 -transA 111 -transB 111 \
 			-step 0 -num_steps 1 \
 			| cut -f 15 -d ';' | sed '1d' | tr -d '[:space:]' >> "$R/$OUT_CLBLAST"
+			echo "" >> "$R/$OUT_CLBLAST"
 	done
 fi
 
 if [[ "$ENABLE_BRAHMA" != 0 ]]; then
-	echo "Build ImageProcessing project"
-	echo "-----------------------------"
 	pushd "$R/ImageProcessing" || exit 1
-	dotnet build -c Release
-	pushd ./src/MatrixMultiplication/bin/Release/net9.0/ || exit 1
+	if [[ "$BUILD_BRAHMA" != 0 ]]; then
+		echo "Build ImageProcessing project"
+		echo "-----------------------------"
+		dotnet build -c Release
+	fi
+	echo "Run Brahma benckmark"
+	echo "---------------------"
 	for N in "${MATRICES_SIZES[@]}"; do
-		IMGPROC_RESULTS=$(mktemp)
-		for _ in $(seq 1 1 $RUNS_NUMBER); do
-			dotnet MatrixMultiplication.dll \
-				--platform "$IMGPROC_DEV" \
-				--workgroupsize "$IMGPROC_WGS" \
-				--workperthread "$IMGPROC_WPT" \
-				--matrixsize "$N" \
-				--kernel k4 \
-				--matrixtype mt-float32 \
-				--semiring arithmetic \
-				| sed '1d' | cut -f 3 -d ' ' >> "$IMGPROC_RESULTS"
-		done
-		awk 'BEGIN { sum = 0 } { sum += $1 } END { print sum / NR }' "$IMGPROC_RESULTS" > "$R/$OUT_BRAHMA"
-		rm "$IMGPROC_RESULTS"
+		dotnet ./src/MatrixMultiplication/bin/Release/net9.0/MatrixMultiplication.dll \
+			--platform "$BRAHMA_DEV" \
+			--workgroupsize "$BRAHMA_WGS" \
+			--workperthread "$BRAHMA_WPT" \
+			--matrixsize "$N" \
+			--kernel "$BRAHMA_KERNEL" \
+			--matrixtype mt-float32 \
+			--semiring arithmetic \
+			--numtorun "$RUNS_NUMBER" \
+			| sed '1d' \
+			| cut -f 3 -d ' ' \
+			| awk -v RUNS="$RUNS_NUMBER" '{ print $1 / RUNS }' >> "$R/$OUT_BRAHMA"
 	done
-	popd || exit 1
 	popd || exit 1
 fi
 
