@@ -9,5 +9,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check scripts with shellcheck
-        run: shellcheck -a -C --shell sh scripts/*.sh
-
+        run: shellcheck -a -C -P . -x --shell bash benchmark.sh
