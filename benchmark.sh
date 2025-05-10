@@ -88,7 +88,7 @@ if [[ "$ENABLE_OPENBLAS" != 0 ]]; then
 		OPENBLAS_LOOPS="$RUNS_NUMBER" "$B/benchmark_gemm" "$N" "$N" 2>&1 \
 			| sed '1,2d' \
 			| awk -v MATRIX="$N" -v RUNS="$RUNS_NUMBER" \
-				'{ print MATRIX, 1000 * $7 / RUNS }' >> "${R}/${OUT_OPENBLAS}"
+				'BEGIN{ OFS="," } { print MATRIX, 1000 * $7 / RUNS }' >> "${R}/${OUT_OPENBLAS}"
 	done
 	echo ""
 fi
