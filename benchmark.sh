@@ -156,7 +156,7 @@ run_brahma() {
 		WPT="$BRAHMA_WPT_DEFAULT"
 	fi
 	OUT_BRAHMA="${R}/brahma_${KERNEL}_${DEV}_${WGS}_${WPT}.csv"
-	echo "matrix,time" > "${R}/${OUT_BRAHMA}"
+	echo "matrix,time" > "${OUT_BRAHMA}"
 	for i in ${!MATRICES_SIZES[*]}; do
 		N=${MATRICES_SIZES[$i]}
 		printf '\rProcess matrix: %d  [%d/%d]' "$N" "$(( i + 1 ))" "${#MATRICES_SIZES[*]}"
