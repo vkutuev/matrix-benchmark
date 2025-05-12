@@ -22,10 +22,6 @@ LLVM_VERSION=18
 OPENCL_PLATFORM=(0 1)
 OPENCL_DEVICE=0
 
-# OpenBLAS configuration
-# ----------------------
-OUT_OPENBLAS=openblas.csv
-
 # ImageProcessing configuration
 # -----------------------------
 BRAHMA_AUTOTUNE=1
@@ -33,5 +29,4 @@ BRAHMA_WGS_DEFAULT=8
 BRAHMA_WPT_DEFAULT=4
 BRAHMA_DEV=("anygpu" "poclcpu")
 BRAHMA_KERNEL=("k3" "k4")
-BRAHMA_TYPE="mt-float32"
 export BRAHMA_OCL_PATH=/usr/lib/libOpenCL.so.1.0.0

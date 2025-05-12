@@ -81,14 +81,15 @@ if [[ "$ENABLE_OPENBLAS" != 0 ]]; then
 
 	echo "Run OpenBLAS benchmark"
 	echo "----------------------"
-	echo "matrix,time" > "${R}/${OUT_OPENBLAS}"
+	OUT_OPENBLAS="${R}/openblas.csv"
+	echo "matrix,time" > "$OUT_OPENBLAS"
 	for i in ${!MATRICES_SIZES[*]}; do
 		N=${MATRICES_SIZES[$i]}
 		printf '\rProcess matrix: %d  [%d/%d]' "$N" "$(( i + 1 ))" "${#MATRICES_SIZES[*]}"
 		OPENBLAS_LOOPS="$RUNS_NUMBER" "$B/benchmark_gemm" "$N" "$N" 2>&1 \
 			| sed '1,2d' \
 			| awk -v MATRIX="$N" -v RUNS="$RUNS_NUMBER" \
-				'BEGIN{ OFS="," } { print MATRIX, 1000 * $7 / RUNS }' >> "${R}/${OUT_OPENBLAS}"
+				'BEGIN{ OFS="," } { print MATRIX, 1000 * $7 / RUNS }' >> "$OUT_OPENBLAS"
 	done
 	echo ""
 fi
@@ -137,6 +138,7 @@ fi
 run_brahma() {
 	KERNEL="$1"
 	DEV="$2"
+	BRAHMA_TYPE="mt-float32"
 	pushd "$R/ImageProcessing" || exit 1
 	echo "Run Brahma benckmark with kernel ${KERNEL} and device ${DEV}"
 	echo "-----------------------------------------------------"
@@ -166,7 +168,7 @@ run_brahma() {
 			--workperthread "$WPT" \
 			--matrixsize "$N" \
 			--kernel "$KERNEL" \
-			--matrixtype mt-float32 \
+			--matrixtype "$BRAHMA_TYPE" \
 			--semiring arithmetic \
 			--numtorun "$RUNS_NUMBER" \
 			| sed '1d' \
