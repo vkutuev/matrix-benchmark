@@ -12,6 +12,8 @@ echo "Apply Configuration"
 echo "-------------------"
 source "$R/conf.sh"
 
+ARCH=$(uname -m)
+
 if [[ "$INSTALL_DEPS" != 0 ]]; then
 	echo "Update apt"
 	echo "----------"
@@ -20,8 +22,22 @@ if [[ "$INSTALL_DEPS" != 0 ]]; then
 	echo "Install deps"
 	echo "--------------"
 	sudo apt install python3-dev build-essential \
-		cmake git pkg-config make ninja-build
-	sudo apt install -y dotnet-sdk-9.0
+		cmake git pkg-config make ninja-build \
+		opencl-headers ocl-icd-opencl-dev
+fi
+
+if [[ "$INSTALL_DOTNET" != 0 ]]; then
+	case "$ARCH" in
+		"x86_64"|"aarch64") sudo apt install -y dotnet-sdk-9.0
+		;;
+		"riscv64")
+			wget https://github.com/dkurt/dotnet_riscv/releases/download/v9.0.100/dotnet-sdk-9.0.100-linux-riscv64-gcc-ubuntu-24.04.tar.gz
+			tar -x -f dotnet-sdk-9.0.100-linux-riscv64-gcc-ubuntu-24.04.tar.gz --one-top-level="${R}/dotnet"
+			export PATH="${R}/dotnet:${PATH}"
+		;;
+		*) echo "Unknown arch" && exit 1
+		;;
+	esac
 fi
 
 if [[ "$BUILD_POCL" != 0 ]]; then
@@ -39,7 +55,6 @@ if [[ "$BUILD_POCL" != 0 ]]; then
 
 	echo "Build and install POCL"
 	echo "----------------------"
-	ARCH=$(uname -m)
 	POCL_CMAKE_FLAGS=""
 	case "$ARCH" in
 		"x86_64") POCL_CMAKE_FLAGS=("-DKERNELLIB_HOST_CPU_VARIANTS=distro")

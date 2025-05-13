@@ -70,6 +70,10 @@ to find out the available platforms and devices.
 
 ### Brahma.fsahrp (ImageProcessing) options
 
+* `INSTALL_DOTNET=0` \
+    Whether to install .NET (or just download in RISC-V case).
+    * `0` — no
+    * `1` — yes
 * `BRAHMA_AUTOTUNE=1` \
     Whether to use autotuner to determine optimal WGS (work group size)
 and WPT (work per thread) parameters for selected devices and kernels.

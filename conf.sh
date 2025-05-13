@@ -24,6 +24,7 @@ OPENCL_DEVICE=0
 
 # ImageProcessing configuration
 # -----------------------------
+INSTALL_DOTNET=0
 BRAHMA_AUTOTUNE=1
 BRAHMA_WGS_DEFAULT=8
 BRAHMA_WPT_DEFAULT=4
